@@ -1,20 +1,35 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fake Live News</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="stylesheet" href="/static/css/styles.css" />
+<link rel="stylesheet" href="/static/css/styles.css">
 <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-<div class="container">
-  <h2>Fake Live News Broadcast</h2>
-  <div class="ticker"><span id="ticker-text">Loading ticker...</span></div>
-  <video id="main-video" controls autoplay muted playsinline style="width:100%; max-height:60vh;"></video>
-  <div style="margin-top:8px;">Now Showing: <span id="now-title">—</span></div>
-  <div>Total Playtime: <span id="total-time">0</span>s</div>
+<header class="header">
+  <h1>📰 Fake Live News Broadcast</h1>
+</header>
+
+<!-- Ticker -->
+<div class="ticker-container">
+  <div class="ticker">
+    <span id="ticker-text">Loading ticker...</span>
+  </div>
 </div>
+
+<main class="main-content">
+  <!-- Video Section -->
+  <section class="video-section">
+    <video id="main-video" controls autoplay muted playsinline></video>
+    <div class="video-info">
+      <span>Now Showing: <strong id="now-title">—</strong></span>
+      <span>Total Playtime: <strong id="total-time">0</strong>s</span>
+    </div>
+  </section>
+</main>
+
 <script src="/static/js/home.js"></script>
 </body>
 </html>
