@@ -17,8 +17,8 @@ let state = {
   playing: false,
   currentIndex: 0,
   playlist: [],
-  ticker: 'Welcome to the fake live news broadcast!',
-  currentTime: 0
+  ticker: 'Welcome to Fake Live News Broadcast!',
+  fakeLiveTime: 0
 };
 
 app.use(express.json());
@@ -35,10 +35,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Upload video
 app.post('/api/upload', upload.single('video'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-
   const entry = {
     id: Date.now().toString(),
     filename: req.file.filename,
@@ -50,17 +48,14 @@ app.post('/api/upload', upload.single('video'), (req, res) => {
   res.json({ ok: true, file: entry });
 });
 
-// Get state
 app.get('/api/state', (req, res) => res.json(state));
 
-// Update ticker
 app.post('/api/ticker', (req, res) => {
   state.ticker = req.body.ticker || '';
   io.emit('ticker-update', state.ticker);
   res.json({ ok: true });
 });
 
-// Broadcast controls
 app.post('/api/control', (req, res) => {
   const { action, index } = req.body;
   if (action === 'start') state.playing = true;
@@ -72,7 +67,6 @@ app.post('/api/control', (req, res) => {
   res.json({ ok: true });
 });
 
-// Reorder playlist
 app.post('/api/reorder', (req, res) => {
   const { order } = req.body;
   if (!Array.isArray(order)) return res.status(400).json({ error: 'Order must be array of ids' });
@@ -82,7 +76,6 @@ app.post('/api/reorder', (req, res) => {
   res.json({ ok: true });
 });
 
-// Delete video
 app.post('/api/remove', (req, res) => {
   const { id } = req.body;
   state.playlist = state.playlist.filter(v => v.id !== id);
@@ -90,7 +83,6 @@ app.post('/api/remove', (req, res) => {
   res.json({ ok: true });
 });
 
-// Socket connections
 io.on('connection', socket => {
   socket.emit('state-update', state);
 });
