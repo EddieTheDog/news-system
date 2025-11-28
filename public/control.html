@@ -1,46 +1,55 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Control Panel - Live News</title>
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="stylesheet" href="/static/css/styles.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control Panel - Fake Live News</title>
+<link rel="stylesheet" href="/static/css/styles.css">
 <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-<div class="container">
-  <h2>Control Panel</h2>
+<header class="header">
+  <h1>Control Panel 🛠️</h1>
+</header>
 
-  <section>
-    <h3>Broadcast Controls</h3>
-    <button id="start" class="btn">Start</button>
-    <button id="stop" class="btn">Stop</button>
-    <button id="prev" class="btn">Prev</button>
-    <button id="next" class="btn">Next</button>
-    <div>
-      <label>Ticker: <input id="ticker-input" style="width:60%"/></label>
-      <button id="set-ticker" class="btn small">Set</button>
+<main class="control-main">
+  <!-- Broadcast Controls -->
+  <section class="controls">
+    <h2>Broadcast Controls</h2>
+    <div class="btn-group">
+      <button id="start" class="btn">Start</button>
+      <button id="stop" class="btn">Stop</button>
+      <button id="prev" class="btn">Prev</button>
+      <button id="next" class="btn">Next</button>
+    </div>
+    <div class="ticker-control">
+      <input id="ticker-input" placeholder="Set ticker text" />
+      <button id="set-ticker" class="btn">Update Ticker</button>
     </div>
   </section>
 
-  <section>
-    <h3>Upload Video</h3>
-    <input id="video-file" type="file" accept="video/*" />
-    <input id="video-title" type="text" placeholder="Title (optional)" />
+  <!-- Upload Section -->
+  <section class="upload">
+    <h2>Upload Video</h2>
+    <input type="file" id="video-file" accept="video/*">
+    <input type="text" id="video-title" placeholder="Title (optional)">
     <button id="upload" class="btn">Upload</button>
-    <div id="upload-msg" style="color:#9f9"></div>
+    <span id="upload-msg"></span>
   </section>
 
-  <section>
-    <h3>Playlist</h3>
+  <!-- Playlist -->
+  <section class="playlist">
+    <h2>Playlist</h2>
     <ul id="pl"></ul>
   </section>
 
-  <section>
-    <h3>Live Preview</h3>
-    <iframe id="preview-frame" src="/" style="width:100%; height:360px; border:1px solid #222;"></iframe>
+  <!-- Live Preview -->
+  <section class="preview">
+    <h2>Live Preview</h2>
+    <iframe id="preview-frame" src="/" frameborder="0"></iframe>
   </section>
-</div>
+</main>
+
 <script src="/static/js/control.js"></script>
 </body>
 </html>
