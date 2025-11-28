@@ -1,17 +1,13 @@
-require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const { Server } = require('socket.io');
-const cors = require('cors');
 
 const PORT = process.env.PORT || 3000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'changeme';
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 
-// ensure uploads folder exists
 if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
 const app = express();
@@ -22,11 +18,9 @@ let state = {
   playing: false,
   currentIndex: 0,
   playlist: [],
-  ticker: 'Welcome to the news channel!',
-  lastActionAt: Date.now()
+  ticker: 'Welcome to the news channel!'
 };
 
-app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/static', express.static(path.join(__dirname, 'public')));
@@ -35,102 +29,54 @@ app.use('/uploads', express.static(UPLOAD_DIR));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/control', (req, res) => res.sendFile(path.join(__dirname, 'public', 'control.html')));
 
-// multer setup
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
 });
 const upload = multer({ storage });
 
-// upload endpoint (admin password in FormData)
 app.post('/api/upload', upload.single('video'), (req, res) => {
-  const pass = req.body.admin_password;
-  if (!pass || pass !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
-
   if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
   const id = Date.now().toString();
   const entry = {
     id,
     filename: req.file.filename,
-    title: req.body.title || req.file.originalname,
-    uploadedAt: new Date().toISOString()
+    title: req.body.title || req.file.originalname
   };
   state.playlist.push(entry);
-  state.lastActionAt = Date.now();
   io.emit('playlist-update', state);
   res.json({ ok: true, file: entry });
 });
 
-// get state
 app.get('/api/state', (req, res) => res.json(state));
 
-// update ticker
 app.post('/api/ticker', (req, res) => {
-  const pass = req.body.admin_password;
-  if (!pass || pass !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
   state.ticker = req.body.ticker || '';
-  state.lastActionAt = Date.now();
   io.emit('ticker-update', state.ticker);
   res.json({ ok: true });
 });
 
-// reorder playlist
-app.post('/api/reorder', (req, res) => {
-  const pass = req.body.admin_password;
-  if (!pass || pass !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
-  const { order } = req.body;
-  if (!Array.isArray(order)) return res.status(400).json({ error: 'Order must be array of ids' });
-  const map = state.playlist.reduce((m, it) => { m[it.id] = it; return m; }, {});
-  state.playlist = order.map(id => map[id]).filter(Boolean);
-  state.lastActionAt = Date.now();
-  io.emit('playlist-update', state);
-  res.json({ ok: true, playlist: state.playlist });
-});
-
-// remove video
-app.post('/api/remove', (req, res) => {
-  const pass = req.body.admin_password;
-  if (!pass || pass !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
-  const { id } = req.body;
-  state.playlist = state.playlist.filter(it => it.id !== id);
-  state.lastActionAt = Date.now();
-  io.emit('playlist-update', state);
-  res.json({ ok: true });
-});
-
-// playback controls
 app.post('/api/control', (req, res) => {
-  const pass = req.body.admin_password;
-  if (!pass || pass !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Unauthorized' });
-
   const { action, index } = req.body;
   if (action === 'start') state.playing = true;
   else if (action === 'stop') state.playing = false;
   else if (action === 'next') state.currentIndex = Math.min(state.playlist.length - 1, state.currentIndex + 1);
   else if (action === 'prev') state.currentIndex = Math.max(0, state.currentIndex - 1);
   else if (action === 'goto' && typeof index === 'number') state.currentIndex = Math.max(0, Math.min(index, state.playlist.length - 1));
-  else if (action === 'play') state.playing = true;
-  else if (action === 'pause') state.playing = false;
-
-  state.lastActionAt = Date.now();
   io.emit('state-update', state);
-  res.json({ ok: true, state });
+  res.json({ ok: true });
+});
+
+app.post('/api/remove', (req, res) => {
+  const { id } = req.body;
+  state.playlist = state.playlist.filter(it => it.id !== id);
+  io.emit('playlist-update', state);
+  res.json({ ok: true });
 });
 
 io.on('connection', (socket) => {
   socket.emit('state-update', state);
-  socket.on('admin-command', (data) => {
-    if (!data || data.password !== ADMIN_PASSWORD) return socket.emit('error', 'unauthorized');
-    const { action } = data;
-    if (action === 'start') state.playing = true;
-    else if (action === 'stop') state.playing = false;
-    else if (action === 'next') state.currentIndex = Math.min(state.playlist.length - 1, state.currentIndex + 1);
-    else if (action === 'prev') state.currentIndex = Math.max(0, state.currentIndex - 1);
-    else if (action === 'goto' && typeof data.index === 'number') state.currentIndex = Math.max(0, Math.min(data.index, state.playlist.length - 1));
-    state.lastActionAt = Date.now();
-    io.emit('state-update', state);
-  });
 });
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
