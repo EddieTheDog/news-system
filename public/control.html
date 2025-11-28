@@ -1,59 +1,57 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Control — News Channel</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="/static/css/styles.css" />
-  <script src="/socket.io/socket.io.js"></script>
+<meta charset="utf-8" />
+<title>Control — News Channel</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="stylesheet" href="/static/css/styles.css" />
+<script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-  <div class="container">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <h2>Control Panel</h2>
-      <div>
-        <label>Admin password: <input id="admin-pass" type="password" /></label>
-        <button id="connect" class="btn small">Connect</button>
-      </div>
+<div class="container">
+  <div style="display:flex; justify-content:space-between; align-items:center;">
+    <h2>Control Panel</h2>
+    <div>
+      <label>Admin password: <input id="admin-pass" type="password" /></label>
+      <button id="connect" class="btn small">Connect</button>
     </div>
-
-    <section style="margin-top:10px">
-      <h3>Broadcast controls</h3>
-      <div class="controls">
-        <button id="start" class="btn">Start</button>
-        <button id="stop" class="btn">Stop</button>
-        <button id="prev" class="btn">Prev</button>
-        <button id="next" class="btn">Next</button>
-      </div>
-      <div style="margin-top:8px;">
-        <label>Ticker text:</label>
-        <input id="ticker-input" type="text" style="width:70%;" />
-        <button id="set-ticker" class="btn small">Set</button>
-      </div>
-    </section>
-
-    <section style="margin-top:12px">
-      <h3>Upload video</h3>
-      <div class="file-row">
-        <input id="video-file" type="file" accept="video/*" />
-        <input id="video-title" type="text" placeholder="Title (optional)" />
-        <button id="upload" class="btn">Upload</button>
-      </div>
-      <div id="upload-msg" style="color:#9f9"></div>
-    </section>
-
-    <section style="margin-top:12px">
-      <h3>Playlist</h3>
-      <ul id="pl"></ul>
-      <small>Drag to reorder by using the arrows. (Simpler reorder buttons for this demo.)</small>
-    </section>
-
-    <section style="margin-top:12px">
-      <h3>Live preview</h3>
-      <iframe id="preview-frame" src="/" style="width:100%; height:360px; border:1px solid #222;"></iframe>
-    </section>
   </div>
 
-  <script src="/static/js/control.js"></script>
+  <section style="margin-top:10px">
+    <h3>Broadcast controls</h3>
+    <div class="controls">
+      <button id="start" class="btn">Start</button>
+      <button id="stop" class="btn">Stop</button>
+      <button id="prev" class="btn">Prev</button>
+      <button id="next" class="btn">Next</button>
+    </div>
+    <div style="margin-top:8px;">
+      <label>Ticker text:</label>
+      <input id="ticker-input" type="text" style="width:70%;" />
+      <button id="set-ticker" class="btn small">Set</button>
+    </div>
+  </section>
+
+  <section style="margin-top:12px">
+    <h3>Upload video</h3>
+    <div class="file-row">
+      <input id="video-file" type="file" accept="video/*" />
+      <input id="video-title" type="text" placeholder="Title (optional)" />
+      <button id="upload" class="btn">Upload</button>
+    </div>
+    <div id="upload-msg" style="color:#9f9"></div>
+  </section>
+
+  <section style="margin-top:12px">
+    <h3>Playlist</h3>
+    <ul id="pl"></ul>
+  </section>
+
+  <section style="margin-top:12px">
+    <h3>Live preview</h3>
+    <iframe id="preview-frame" src="/" style="width:100%; height:360px; border:1px solid #222;"></iframe>
+  </section>
+</div>
+<script src="/static/js/control.js"></script>
 </body>
 </html>
