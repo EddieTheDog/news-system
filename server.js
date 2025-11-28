@@ -17,7 +17,8 @@ let state = {
   playing: false,
   currentIndex: 0,
   playlist: [],
-  ticker: 'Welcome to the live news broadcast!'
+  ticker: 'Welcome to the fake live news broadcast!',
+  currentTime: 0
 };
 
 app.use(express.json());
@@ -28,7 +29,6 @@ app.use('/uploads', express.static(UPLOAD_DIR));
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 app.get('/control', (req, res) => res.sendFile(path.join(__dirname, 'public', 'control.html')));
 
-// Multer for video upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, UPLOAD_DIR),
   filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
@@ -42,14 +42,15 @@ app.post('/api/upload', upload.single('video'), (req, res) => {
   const entry = {
     id: Date.now().toString(),
     filename: req.file.filename,
-    title: req.body.title || req.file.originalname
+    title: req.body.title || req.file.originalname,
+    duration: parseFloat(req.body.duration) || 0
   };
   state.playlist.push(entry);
   io.emit('playlist-update', state);
   res.json({ ok: true, file: entry });
 });
 
-// Get current state
+// Get state
 app.get('/api/state', (req, res) => res.json(state));
 
 // Update ticker
@@ -71,9 +72,9 @@ app.post('/api/control', (req, res) => {
   res.json({ ok: true });
 });
 
-// Reorder playlist (move up/down)
+// Reorder playlist
 app.post('/api/reorder', (req, res) => {
-  const { order } = req.body; // array of ids in new order
+  const { order } = req.body;
   if (!Array.isArray(order)) return res.status(400).json({ error: 'Order must be array of ids' });
   const map = state.playlist.reduce((m, v) => { m[v.id] = v; return m; }, {});
   state.playlist = order.map(id => map[id]).filter(Boolean);
