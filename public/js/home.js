@@ -1,6 +1,5 @@
 const socket = io();
 
-// elements
 const video = document.getElementById('main-video');
 const tickerText = document.getElementById('ticker-text');
 const nowTitle = document.getElementById('now-title');
@@ -29,11 +28,8 @@ function applyState(s) {
     const src = cur ? `/uploads/${cur.filename}` : null;
     if (src && video.src !== src) {
       video.src = src;
-      if (s.playing) {
-        video.play().catch(()=>{});
-      } else {
-        video.pause();
-      }
+      if (s.playing) video.play().catch(()=>{});
+      else video.pause();
     } else {
       if (s.playing) video.play().catch(()=>{});
       else video.pause();
@@ -46,17 +42,8 @@ function applyState(s) {
   }
 }
 
-socket.on('connect', () => console.log('connected to server'));
-socket.on('state-update', (s) => {
-  applyState(s);
-});
-socket.on('playlist-update', (s) => {
-  // sometimes server emits playlist only; ensure full state request for safety
-  fetch('/api/state').then(r=>r.json()).then(applyState);
-});
-socket.on('ticker-update', (t) => {
-  tickerText.textContent = t;
-});
+socket.on('state-update', applyState);
+socket.on('playlist-update', () => fetch('/api/state').then(r=>r.json()).then(applyState));
+socket.on('ticker-update', (t) => tickerText.textContent = t);
 
-// initial fetch
 fetch('/api/state').then(r=>r.json()).then(applyState);
