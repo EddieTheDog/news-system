@@ -2,17 +2,18 @@
 <html>
 <head>
 <meta charset="utf-8" />
-<title>Live News Broadcast</title>
+<title>Fake Live News</title>
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <link rel="stylesheet" href="/static/css/styles.css" />
 <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
 <div class="container">
-  <h2>Live News Broadcast</h2>
-  <div class="ticker"><span id="ticker-text">Welcome</span></div>
+  <h2>Fake Live News Broadcast</h2>
+  <div class="ticker"><span id="ticker-text">Loading ticker...</span></div>
   <video id="main-video" controls autoplay muted playsinline style="width:100%; max-height:60vh;"></video>
   <div style="margin-top:8px;">Now Showing: <span id="now-title">—</span></div>
+  <div>Total Playtime: <span id="total-time">0</span>s</div>
 </div>
 <script src="/static/js/home.js"></script>
 </body>
